@@ -1,5 +1,6 @@
 """Plex module for interacting with the Plex API."""
 from plexapi.server import PlexServer
+from plexapi.base import PlexObject
 from datetime import datetime
 
 
@@ -28,7 +29,7 @@ class PlexService:
     #         self.__media_is_expired(episode, exp_date)
     #         for episode in season.episodes()
     #     )
-    
+
     # def __show_is_expired(self, show, exp_date: datetime) -> bool:
     #     """True if show is expired"""
     #     return all(
@@ -36,7 +37,7 @@ class PlexService:
     #         for season in show.seasons()
     #     )
 
-    def __get_library_media(self, media_type: str):
+    def __get_library_media(self, media_type: str) -> list[PlexObject]:
         """Get all media from the Plex server."""
         return self.plex_server.library.search(libtype=media_type)
 
@@ -46,6 +47,7 @@ class PlexService:
         expired_media = []
         for item in media:
             if self.__media_is_expired(item, exp_date):
+                item.reload()  # Need full metadata now, since we're going to delete it
                 expired_media.append(item)
         return expired_media
 
@@ -55,6 +57,7 @@ class PlexService:
         expired_seasons = []
         for season in seasons:
             if self.__media_is_expired(season, exp_date):
+                season.reload()  # Need full metadata now, since we're going to delete it
                 expired_seasons.append(season)
         return expired_seasons
 
@@ -64,5 +67,10 @@ class PlexService:
         expired_shows = []
         for show in shows:
             if self.__media_is_expired(show, exp_date):
+                show.reload()  # Need full metadata now, since we're going to delete it
                 expired_shows.append(show)
         return expired_shows
+
+    def refresh_libraries(self):
+        """Refresh all libraries."""
+        self.plex_server.library.update()

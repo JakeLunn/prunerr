@@ -1,9 +1,12 @@
 """Prune command module."""
 from argparse import Namespace
 from datetime import datetime, timedelta
+from retrying import retry
 from observers import Subject
 from observers.overseerr import OverseerrObserver
 from observers.radarr import RadarrObserver
+from observers.sonarr import SonarrObserver
+from requests.exceptions import ReadTimeout
 from modules.plex import PlexService
 from modules.config import load_config
 
@@ -31,8 +34,9 @@ class PruneService(Subject):
             config.has_option("sonarr", "enable")
             and config["sonarr"]["enable"] == "True"
         ):
-            # subject.attach(SonarrObserver())
-            pass
+            self.attach(
+                SonarrObserver(config["sonarr"]["host"], config["sonarr"]["api_key"])
+            )
         if (
             config.has_option("overseerr", "enable")
             and config["overseerr"]["enable"] == "True"
@@ -50,10 +54,20 @@ class PruneService(Subject):
             age = datetime.now() - media.lastViewedAt
         return age
 
+    def __retry_if_read_timeout(self, exception):
+        """Return True if we should retry (in this case when it's a ReadTimeout), False otherwise"""
+        return isinstance(exception, ReadTimeout)
+
+    @retry(
+        stop_max_attempt_number=3,
+        wait_fixed=5000,
+        retry_on_exception=__retry_if_read_timeout,
+    )
     def __delete_media(self, media, dry_run: bool):
         """Delete a media item."""
         if not dry_run:
             media.delete()
+            print("[PLEX][DELETE]: OK")
         else:
             print("Dry run, not deleting from Plex")
         self.notify_media_deleted(media, dry_run)
@@ -73,10 +87,11 @@ class PruneService(Subject):
                     f"Age: {self.__get_age(movie)}"
                 )
             )
-        print("Deleting expired movies...")
         count = 1
         for movie in expired_movies:
-            print(f"{count}/{len(expired_movies)} - Deleting {movie.title} ({movie.ratingKey})...")
+            print(
+                f"{count}/{len(expired_movies)} - Deleting {movie.title} ({movie.ratingKey})..."
+            )
             self.__delete_media(movie, dry_run)
             count += 1
         print("Done deleting expired movies.")
@@ -96,10 +111,11 @@ class PruneService(Subject):
                     f"Age: {self.__get_age(show)}"
                 )
             )
-        print("Deleting expired shows...")
         count = 1
         for show in expired_shows:
-            print(f"{count}/{len(expired_shows)} - Deleting {show.title} ({show.ratingKey})...")
+            print(
+                f"{count}/{len(expired_shows)} - Deleting {show.title} ({show.ratingKey})..."
+            )
             self.__delete_media(show, dry_run)
             count += 1
         print("Done deleting expired shows.")
@@ -113,3 +129,10 @@ class PruneService(Subject):
         self.__prune_expired_movies(exp_date, dry_run)
         print("---------------------------------------")
         self.__prune_expired_shows(exp_date, dry_run)
+        print("Done pruning media.")
+        print("---------------------------------------")
+
+        if args.refresh_libraries and not dry_run:
+            print("Refreshing Plex libraries...")
+            self._api.refresh_libraries()
+            print("Done refreshing Plex libraries.")

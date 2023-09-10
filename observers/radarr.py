@@ -1,5 +1,6 @@
 """Radarr Observer class for the Observer pattern."""
 import requests
+from plexapi.exceptions import NotFound
 from observers import Observer
 
 
@@ -21,10 +22,10 @@ class RadarrObserver(Observer):
         )
         if tmdbid is None:
             print("Radarr - No tmdbid found for media, skipping delete from Radarr")
-            return
-        tmdbid_str = str(tmdbid.id).removeprefix("tmdb://")
+            return None
+        id_str = str(tmdbid.id).removeprefix("tmdb://")
         response = self.session.get(
-            f"{self.session.base_url}/api/v3/movie?tmdbid={tmdbid_str}"
+            f"{self.session.base_url}/api/v3/movie?tmdbid={id_str}"
         ).json()[0]
         if response["id"] is None:
             return None
@@ -40,14 +41,13 @@ class RadarrObserver(Observer):
             print("Dry run, not deleting from Radarr")
             return
         response = self.session.delete(
-            f"{self.session.base_url}/api/v3/movie/{movie.id}"
+            f"{self.session.base_url}/api/v3/movie/{movie['id']}"
         )
-        if response.status_code > 300:
-            print((
-                f"Radarr: {movie.title} failed to delete, "
-                f"status code: {response.status_code}"
-            ))
+        print(f"[RADARR][DELETE]: {response.status_code}")
 
     def on_media_deleted(self, media: str, dry_run: bool):
         """Delete a movie from Radarr."""
-        self.__delete_movie(media, dry_run)
+        try:
+            self.__delete_movie(media, dry_run)
+        except NotFound as exception:
+            print(f"Radarr - exception occurred trying to delete movie: {exception}")

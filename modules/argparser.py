@@ -70,7 +70,7 @@ def __create_subparser_prune(subparsers):
     subparser = subparsers.add_parser("prune", help="Prune media from Plex")
 
     subparser.add_argument(
-        "--days-to-expire", required=True, help="Number of days to keep media"
+        "-de", "--days-to-expire", required=True, help="Number of days to keep media"
     )
 
     subparser.add_argument(
@@ -78,6 +78,13 @@ def __create_subparser_prune(subparsers):
         required=False,
         help="Dry run, do not delete media",
         action="store_true",
+    )
+
+    subparser.add_argument(
+        "-rl", "--refresh-libraries",
+        required=False,
+        help="Refresh Plex libraries after pruning",
+        action="store_true"
     )
 
     return subparser

@@ -59,7 +59,7 @@ class OverseerrObserver(Observer):
             return
         if not dry_run:
             response = self.session.delete(
-                f'{self.session.base_url}/api/v1/request/{request["id"]}'
+                f"{self.session.base_url}/api/v1/request/{request['id']}"
             )
             print(f"[OVERSEERR][DELETE][REQUEST]: {response.status_code}")
         else:
@@ -73,7 +73,7 @@ class OverseerrObserver(Observer):
             return
         if not dry_run:
             response = self.session.delete(
-                f'{self.session.base_url}/api/v1/media/{media["id"]}'
+                f"{self.session.base_url}/api/v1/media/{media['id']}"
             )
             print(f"[OVERSEERR][DELETE][MEDIA]: {response.status_code}")
         else:
