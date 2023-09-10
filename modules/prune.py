@@ -3,6 +3,7 @@ from argparse import Namespace
 from datetime import datetime, timedelta
 from observers import Subject
 from observers.overseerr import OverseerrObserver
+from observers.radarr import RadarrObserver
 from modules.plex import PlexService
 from modules.config import load_config
 
@@ -23,8 +24,9 @@ class PruneService(Subject):
             config.has_option("radarr", "enable")
             and config["radarr"]["enable"] == "True"
         ):
-            # subject.attach(RadarrObserver())
-            pass
+            self.attach(
+                RadarrObserver(config["radarr"]["host"], config["radarr"]["api_key"])
+            )
         if (
             config.has_option("sonarr", "enable")
             and config["sonarr"]["enable"] == "True"
@@ -74,7 +76,7 @@ class PruneService(Subject):
         print("Deleting expired movies...")
         count = 1
         for movie in expired_movies:
-            print(f"{count}/{len(expired_movies)} - Deleting {movie.title}...")
+            print(f"{count}/{len(expired_movies)} - Deleting {movie.title} ({movie.ratingKey})...")
             self.__delete_media(movie, dry_run)
             count += 1
         print("Done deleting expired movies.")
@@ -97,7 +99,7 @@ class PruneService(Subject):
         print("Deleting expired shows...")
         count = 1
         for show in expired_shows:
-            print(f"{count}/{len(expired_shows)} - Deleting {show.title}...")
+            print(f"{count}/{len(expired_shows)} - Deleting {show.title} ({show.ratingKey})...")
             self.__delete_media(show, dry_run)
             count += 1
         print("Done deleting expired shows.")

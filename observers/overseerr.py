@@ -1,6 +1,6 @@
 """Overseerr Observer class for the Observer pattern."""
-from observers import Observer
 import requests
+from observers import Observer
 
 
 class OverseerrObserver(Observer):
