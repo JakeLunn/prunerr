@@ -1,6 +1,7 @@
 """Sonarr Observer class for the Observer pattern."""
 import requests
 from plexapi.exceptions import NotFound
+
 from observers import Observer
 
 

@@ -1,14 +1,16 @@
 """Prune command module."""
 from argparse import Namespace
 from datetime import datetime, timedelta
+
+from requests.exceptions import ReadTimeout
 from retrying import retry
+
+from modules.config import load_config
+from modules.plex import PlexService
 from observers import Subject
 from observers.overseerr import OverseerrObserver
 from observers.radarr import RadarrObserver
 from observers.sonarr import SonarrObserver
-from requests.exceptions import ReadTimeout
-from modules.plex import PlexService
-from modules.config import load_config
 
 
 class PruneService(Subject):

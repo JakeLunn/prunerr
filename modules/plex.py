@@ -1,7 +1,8 @@
 """Plex module for interacting with the Plex API."""
-from plexapi.server import PlexServer
-from plexapi.base import PlexObject
 from datetime import datetime
+
+from plexapi.base import PlexObject
+from plexapi.server import PlexServer
 
 
 class PlexService:

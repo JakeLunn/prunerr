@@ -1,8 +1,9 @@
 """Command Line tool for pruning a Plex Media Library and syncing Radarr/Sonarr/Overseerr"""
 from modules.argparser import create_parser
-from modules.config import run as config_run
 from modules.config import plex_is_configured
+from modules.config import run as config_run
 from modules.prune import PruneService
+
 
 def main():
     """Main function."""
