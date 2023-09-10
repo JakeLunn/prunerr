@@ -23,20 +23,6 @@ class PlexService:
                 return True
         return False
 
-    # def __season_is_expired(self, season, exp_date: datetime) -> bool:
-    #     """True if season is expired"""
-    #     return all(
-    #         self.__media_is_expired(episode, exp_date)
-    #         for episode in season.episodes()
-    #     )
-
-    # def __show_is_expired(self, show, exp_date: datetime) -> bool:
-    #     """True if show is expired"""
-    #     return all(
-    #         self.__season_is_expired(season, exp_date)
-    #         for season in show.seasons()
-    #     )
-
     def __get_library_media(self, media_type: str) -> list[PlexObject]:
         """Get all media from the Plex server."""
         return self.plex_server.library.search(libtype=media_type)
