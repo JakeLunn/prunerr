@@ -103,9 +103,3 @@ def create_parser():
     __create_subparser_prune(subparsers)
 
     return parser
-
-
-# prunerr prune --plex-host https://plex.example.com --plex-token 1234567890 --days-to-expire 30
-# prunerr config plex --plex-host https://plex.example.com --plex-token 1234567890
-# prunerr config radarr --radarr-host https://radarr.example.com --radarr-token 1234567890
-# prunerr config sonarr --sonarr-host https://sonarr.example.com --sonarr-token 1234567890
