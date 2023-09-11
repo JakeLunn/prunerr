@@ -51,3 +51,45 @@ $ python main.py prune --days-to-expire 30 --dry-run
 ```bash
 $ python main.py prune --days-to-expire 30 --refresh-libraries
 ```
+
+## Example Output
+```
+Pruning media older than 2023-08-11 18:25:53.115871...
+Getting expired movies...
+Found 1 expired movies:
+Movie: Unforgiven, Last Viewed: None, Added: 2023-08-11 18:20:53, Age: 30 days, 0:05:06.705732
+1/1 - Deleting Unforgiven (7892)...
+[PLEX][DELETE]: OK
+[RADARR][DELETE]: 200
+[OVERSEERR][DELETE][REQUEST]: 204
+[OVERSEERR][DELETE][MEDIA]: 204
+Done deleting expired movies.
+---------------------------------------
+Getting expired shows...
+Found 4 expired shows:
+Show: The Walking Dead, Last Viewed: None, Added: 2022-10-10 03:37:24, Age: 335 days, 14:48:39.375397
+Show: The Rehearsal, Last Viewed: 2022-08-21 20:31:07, Added: 2022-11-12 07:01:04, Age: 384 days, 21:54:56.376397
+Show: Berserk, Last Viewed: 2022-04-15 04:26:34, Added: 2022-11-12 07:12:20, Age: 513 days, 13:59:29.376397
+Show: Demon Slayer: Kimetsu no Yaiba, Last Viewed: 2022-04-10 17:21:16, Added: 2022-04-10 16:14:09, Age: 518 days, 1:04:47.376397
+1/4 - Deleting The Walking Dead (4101)...
+[PLEX][DELETE]: OK
+[SONARR][DELETE]: 200
+[OVERSEERR][DELETE][REQUEST]: 204
+[OVERSEERR][DELETE][MEDIA]: 204
+2/4 - Deleting The Rehearsal (4467)...
+[PLEX][DELETE]: OK
+[SONARR][DELETE]: 200
+[OVERSEERR][DELETE][REQUEST]: 204
+[OVERSEERR][DELETE][MEDIA]: 204
+3/4 - Deleting Berserk (4883)...
+[PLEX][DELETE]: OK
+[SONARR][DELETE]: 200
+[OVERSEERR][DELETE][REQUEST]: 204
+[OVERSEERR][DELETE][MEDIA]: 204
+4/4 - Deleting Demon Slayer: Kimetsu no Yaiba (6209)...
+[PLEX][DELETE]: OK
+[SONARR][DELETE]: 200
+Overseerr: 6209 Request not found
+[OVERSEERR][DELETE][MEDIA]: 204
+Done deleting expired shows.
+```
