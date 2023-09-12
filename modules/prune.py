@@ -52,7 +52,9 @@ class PruneService(Subject):
     def __get_age(self, media):
         """Get the age timedelta of a media item."""
         age = datetime.now() - media.addedAt
-        if media.lastViewedAt is not None:
+        # Note: Sometimes lastViewedAt is older than addedAt because
+        # it was previously viewed, deleted, then re-added
+        if media.lastViewedAt is not None and media.lastViewedAt > media.addedAt:
             age = datetime.now() - media.lastViewedAt
         return age
 
