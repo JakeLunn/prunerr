@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from requests.exceptions import ReadTimeout
 from retrying import retry
 
+from modules.util import media_age
 from modules.config import load_config
 from modules.plex import PlexService
 from observers import Subject
@@ -49,15 +50,6 @@ class PruneService(Subject):
                 )
             )
 
-    def __get_age(self, media):
-        """Get the age timedelta of a media item."""
-        age = datetime.now() - media.addedAt
-        # Note: Sometimes lastViewedAt is older than addedAt because
-        # it was previously viewed, deleted, then re-added
-        if media.lastViewedAt is not None and media.lastViewedAt > media.addedAt:
-            age = datetime.now() - media.lastViewedAt
-        return age
-
     def __retry_if_read_timeout(self, exception):
         """Return True if we should retry (in this case when it's a ReadTimeout), False otherwise"""
         return isinstance(exception, ReadTimeout)
@@ -81,14 +73,14 @@ class PruneService(Subject):
         print("Getting expired movies...")
         expired_movies = self._api.get_expired_media("movie", exp_date)
         print(f"Found {len(expired_movies)} expired movies:")
-        expired_movies.sort(key=self.__get_age)
+        expired_movies.sort(key=media_age)
         for movie in expired_movies:
             print(
                 (
                     f"Movie: {movie.title}, "
                     f"Last Viewed: {movie.lastViewedAt}, "
                     f"Added: {movie.addedAt}, "
-                    f"Age: {self.__get_age(movie)}"
+                    f"Age: {media_age(movie)}"
                 )
             )
         count = 1
@@ -105,14 +97,14 @@ class PruneService(Subject):
         print("Getting expired shows...")
         expired_shows = self._api.get_expired_shows(exp_date)
         print(f"Found {len(expired_shows)} expired shows:")
-        expired_shows.sort(key=self.__get_age)
+        expired_shows.sort(key=media_age)
         for show in expired_shows:
             print(
                 (
                     f"Show: {show.title}, "
                     f"Last Viewed: {show.lastViewedAt}, "
                     f"Added: {show.addedAt}, "
-                    f"Age: {self.__get_age(show)}"
+                    f"Age: {media_age(show)}"
                 )
             )
         count = 1
