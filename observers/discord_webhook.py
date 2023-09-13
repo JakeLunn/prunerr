@@ -30,6 +30,7 @@ class DiscordWebhook(Observer):
                     "title": embed_title,
                     "description": embed_description,
                     "fields": fields,
+                    "color": 0xFFA700,
                     "thumbnail": {
                         "url": "https://media.discordapp.net/attachments/1087097209536921750/1151392300308627456/goodbye.gif"
                     },
@@ -53,7 +54,7 @@ class DiscordWebhook(Observer):
             fields.append({
                 "name": "Movies",
                 "value": f"{movie_titles_str}",
-                "inline": True 
+                "inline": False 
             })
 
         show_titles = [f"- {media.title}" for media in self.deleted_media if media.type == "show"]
@@ -62,12 +63,12 @@ class DiscordWebhook(Observer):
             fields.append({
                 "name": "Shows",
                 "value": f"{show_titles_str}",
-                "inline": True
+                "inline": False
             })
 
         fields.append({
             "name": "See a keeper?",
-            "value": "You can save media from deletion by marking the movie or episode of a show as 'Watched' on Plex.",
+            "value": "Then get watching! Movies and shows are deleted if they go unwatched for too long. You can always re-request the deleted media on Overseerr, too.",
             "inline": False
         })
 
