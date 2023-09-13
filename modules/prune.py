@@ -12,6 +12,7 @@ from observers import Subject
 from observers.overseerr import OverseerrObserver
 from observers.radarr import RadarrObserver
 from observers.sonarr import SonarrObserver
+from observers.discord_webhook import DiscordWebhook
 
 
 class PruneService(Subject):
@@ -21,11 +22,10 @@ class PruneService(Subject):
         super().__init__()
         config = load_config()
         self._api = PlexService(config["plex"]["host"], config["plex"]["token"])
-        self.__init_observers()
+        self.__init_observers(config)
 
-    def __init_observers(self):
+    def __init_observers(self, config):
         """Initialize all observers."""
-        config = load_config()
         if (
             config.has_option("radarr", "enable")
             and config["radarr"]["enable"] == "True"
@@ -48,6 +48,13 @@ class PruneService(Subject):
                 OverseerrObserver(
                     config["overseerr"]["host"], config["overseerr"]["api_key"]
                 )
+            )
+        if (
+            config.has_option("discord_webhook", "enable")
+            and config["discord_webhook"]["enable"] == "True"
+        ):
+            self.attach(
+                DiscordWebhook(config["discord_webhook"]["url"])
             )
 
     def __retry_if_read_timeout(self, exception):
@@ -132,3 +139,5 @@ class PruneService(Subject):
             print("Refreshing Plex libraries...")
             self._api.refresh_libraries()
             print("Done refreshing Plex libraries.")
+        
+        self.notify_prune_finished(dry_run)

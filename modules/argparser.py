@@ -62,6 +62,18 @@ def __create_subparser_config(subparsers):
         default=True
     )
 
+    # Discord Webhook
+    webhook_parser = subsubparsers.add_parser("discord-webhook", help="Configure Discord Webhook")
+    webhook_parser.add_argument(
+        "--url", required=True, help="Discord Webhook URL"
+    )
+    webhook_parser.add_argument(
+        "--enable",
+        required=False,
+        help="Enable/disable posting to Discord",
+        default=True
+    )
+
     return subparser
 
 

@@ -72,6 +72,17 @@ def __configure_overseerr(
     }
     __save_config(config)
 
+def __configure_discord_webhook(
+        config: ConfigParser,
+        url: str,
+        enable: bool
+):
+    """Configure the Discord Webhook settings"""
+    config["discord_webhook"] = {
+        "url": url,
+        "enable": str(enable)
+    }
+    __save_config(config)
 
 def run(args: Namespace):
     """Run the config command"""
@@ -91,6 +102,12 @@ def run(args: Namespace):
             args.host,
             args.api_key,
             args.enable,
+        )
+    elif args.config_type == "discord-webhook":
+        __configure_discord_webhook(
+            load_config(),
+            args.url,
+            args.enable
         )
     else:
         raise NotImplementedError("Invalid config type")

@@ -8,7 +8,9 @@ class Observer:
 
     def on_media_deleted(self, media, dry_run: bool):
         """Called when a media item is deleted."""
-        
+
+    def on_prune_finished(self, dry_run: bool):
+        """Called when a prune has finished executing"""
 
 class Subject(Observer):
     """Subject class for the Observer pattern."""
@@ -31,3 +33,9 @@ class Subject(Observer):
         for observer in self._observers:
             if observer.media_type in ("all", media.type):
                 observer.on_media_deleted(media, dry_run)
+
+    def notify_prune_finished(self, dry_run: bool):
+        """Notify all observers that a dry run has completed"""
+        for observer in self._observers:
+            if observer.media_type == "all":
+                observer.on_prune_finished(dry_run)
